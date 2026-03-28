@@ -1,61 +1,65 @@
-
+# ===========================
 # Dependencies
+# ===========================
 node_modules/
-dist/
-build/
-.next/
-out/
-.docusaurus/
-.cache/
-.parcel-cache/
-.turbo/
-.npm
-.yarn-error.log
+.pnp
+.pnp.js
+.yarn/install-state.gz
 
-# Environment Files
+# ===========================
+# Next.js Build Output
+# ===========================
+.next/
+/out/
+/build
+
+# ===========================
+# Environment Variables
+# ===========================
+# IMPORTANT: Set these in Netlify Dashboard → Site Settings → Environment Variables
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-*.env*
+.env*.local
 
+
+
+# ===========================
+# TypeScript
+# ===========================
+*.tsbuildinfo
+next-env.d.ts
+
+# ===========================
 # Logs
+# ===========================
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
 .pnpm-debug.log*
 
-# OS Files
+# ===========================
+# OS & Editor
+# ===========================
 .DS_Store
 Thumbs.db
 desktop.ini
-
-# IDE & Editor Files
 .vscode/
 .idea/
 *.swp
 *.swo
-.project
-.classpath
-.settings/
-*.sublime-project
-*.sublime-workspace
 
-# Temporary & Build Output
-tmp/
-*.json
-!package.json
-!package-lock.json
-!composer.json
-!tsconfig.json
-!jsconfig.json
-!next-env.d.ts
-
-# Specific to this project
+# ===========================
+# Misc / Temp
+# ===========================
+*.log
 test-output.json
 test-output2.json
-storage/students/
-public/storage/students/
-client/public/storage/students/
+
+# ===========================
+# Maintenance Scripts - Env
+# ===========================
+scripts/.env
+scripts/.env.local

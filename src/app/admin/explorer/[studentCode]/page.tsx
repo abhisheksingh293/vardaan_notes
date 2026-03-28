@@ -3,7 +3,7 @@ import React, { useState, useEffect, use } from "react";
 import axios from "axios";
 import { 
   BookOpen, Folder, FileText, ChevronRight, RefreshCw, 
-  ArrowLeft, Home, User, CheckCircle, Database, Layout, Search, ExternalLink, Plus
+  ArrowLeft, Home, User, CheckCircle, Database, Layout, Search, ExternalLink, Plus, Info
 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";

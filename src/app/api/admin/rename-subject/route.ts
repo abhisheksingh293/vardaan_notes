@@ -1,19 +1,13 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { renameSubject } from '@/lib/fileService';
 
-const getSupabaseAdmin = () => createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 async function checkAuth(request: Request) {
-    const supabaseAdmin = getSupabaseAdmin();
     const authHeader = request.headers.get('Authorization');
     if (!authHeader) return null;
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user } } = await supabaseAdmin.auth.getUser(token);
+    const { data: { user } } = await supabase.auth.getUser(token);
     return user;
 }
 

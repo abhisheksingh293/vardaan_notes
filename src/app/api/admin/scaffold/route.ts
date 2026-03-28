@@ -1,23 +1,20 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { createStudentFolder, createFile } from '@/lib/fileService';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+async function checkAuth(request: Request) {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader) return null;
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user } } = await supabase.auth.getUser(token);
+    return user;
+}
 
 export async function POST(request: Request) {
     try {
-        const authHeader = request.headers.get('Authorization');
-        if (!authHeader) {
-            return NextResponse.json({ error: 'Unauthorized: No token provided' }, { status: 401 });
-        }
+        const user = await checkAuth(request);
 
-        const token = authHeader.replace('Bearer ', '');
-        const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-
-        if (authError || !user) {
+        if (!user) {
             return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 });
         }
 

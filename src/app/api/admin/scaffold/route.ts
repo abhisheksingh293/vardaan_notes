@@ -47,8 +47,13 @@ export async function POST(request: Request) {
 
             if (!isNaN(classLevel) && classLevel <= 8) {
                 const sanitizedName = studentName?.replace(/\s+/g, '') || 'Student';
-                const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-                const dashboardUrl = `${baseUrl}/student/${sanitizedName}_${studentCode}`;
+                const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+                if (!baseUrl) {
+                    console.warn("[Dashboard Registry] NEXT_PUBLIC_SITE_URL is not defined. Defaulting to relative protocol-less path.");
+                }
+                const dashboardUrl = baseUrl 
+                    ? `${baseUrl}/student/${sanitizedName}_${studentCode}`
+                    : `/student/${sanitizedName}_${studentCode}`;
 
                 // Check for existing link to prevent duplicates
                 const { data: existingLink } = await supabase

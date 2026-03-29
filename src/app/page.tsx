@@ -41,7 +41,7 @@ export default function Home() {
             </h1>
             <p className="mt-1 md:mt-2 text-base md:text-lg text-zinc-600 dark:text-zinc-400">Manage your students and dynamic learning materials.</p>
           </div>
-          <a href="/admin" className="w-full md:w-auto text-center px-5 py-3 md:py-2.5 bg-zinc-900 dark:bg-white text-white dark:text-black font-medium rounded-xl hover:opacity-90 transition-opacity">
+          <a href="/admin" className="w-full md:w-auto text-center px-5 py-3 md:py-2.5 bg-zinc-900 dark:bg-white text-white dark:text-black font-medium rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-100">
             Admin Panel
           </a>
         </header>

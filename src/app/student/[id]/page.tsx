@@ -52,7 +52,7 @@ function getSubjectTheme(name: string) {
 function ModernSubjectIcon({ name, size = "w-14 h-14" }: { name: string, size?: string }) {
   const theme = getSubjectTheme(name);
   return (
-    <div className={`${size} ${theme.bg} ${theme.border} border backdrop-blur-md rounded-2xl flex items-center justify-center ${theme.color} shadow-lg ${theme.glow} transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shrink-0`}>
+    <div className={`${size} ${theme.bg} ${theme.border} border backdrop-blur-md rounded-2xl flex items-center justify-center ${theme.color} shadow-lg ${theme.glow} shrink-0`}>
       {getSubjectIcon(name)}
     </div>
   );
@@ -139,7 +139,7 @@ function StudentDashboardContent({ params }: { params: Promise<{ id: string }> }
         <div className="flex items-center gap-2 mb-6 text-sm font-medium text-zinc-600 dark:text-zinc-400 overflow-x-auto pb-2 scrollbar-width-none snap-x relative z-0">
            <button 
              onClick={() => { updateState({ subject: null, chapter: null, viewTests: null, test: null }); }}
-             className={`hover:text-blue-600 dark:hover:text-blue-400 py-1 transition-colors shrink-0 snap-start ${(!selectedSubject && !isViewingTests) ? 'text-blue-600 dark:text-blue-400' : ''}`}
+             className={`hover:text-blue-600 dark:hover:text-blue-400 py-1 shrink-0 snap-start ${(!selectedSubject && !isViewingTests) ? 'text-blue-600 dark:text-blue-400' : ''}`}
            >
              Dashboard
            </button>
@@ -149,7 +149,7 @@ function StudentDashboardContent({ params }: { params: Promise<{ id: string }> }
                <ChevronRight className="w-4 h-4 text-zinc-300 dark:text-zinc-700 shrink-0" />
                <button 
                  onClick={() => { updateState({ test: null }); }}
-                 className={`hover:text-blue-600 dark:hover:text-blue-400 transition-colors shrink-0 ${isViewingTests && !selectedTest ? 'text-blue-600 dark:text-blue-400' : ''}`}
+                 className={`hover:text-blue-600 dark:hover:text-blue-400 shrink-0 ${isViewingTests && !selectedTest ? 'text-blue-600 dark:text-blue-400' : ''}`}
                >
                  Tests
                </button>
@@ -168,7 +168,7 @@ function StudentDashboardContent({ params }: { params: Promise<{ id: string }> }
                <ChevronRight className="w-4 h-4 text-zinc-300 dark:text-zinc-700 shrink-0" />
                <button 
                  onClick={() => { updateState({ chapter: null }); }}
-                 className={`hover:text-blue-600 dark:hover:text-blue-400 transition-colors shrink-0 capitalize ${selectedSubject && !selectedChapter ? 'text-blue-600 dark:text-blue-400' : ''}`}
+                 className={`hover:text-blue-600 dark:hover:text-blue-400 shrink-0 capitalize ${selectedSubject && !selectedChapter ? 'text-blue-600 dark:text-blue-400' : ''}`}
                >
                  {selectedSubject}
                </button>
@@ -192,7 +192,7 @@ function StudentDashboardContent({ params }: { params: Promise<{ id: string }> }
           
           {/* Root Level: Dual-Zone Cockpit (Tests & Subjects) */}
           {!selectedSubject && !isViewingTests && (
-            <div className="w-full animate-in fade-in slide-in-from-bottom-2 duration-700 space-y-12">
+            <div className="w-full space-y-12">
                
                {/* Zone 1: Tests */}
                <section>
@@ -205,10 +205,10 @@ function StudentDashboardContent({ params }: { params: Promise<{ id: string }> }
                     {testTree && Object.keys(testTree).length > 0 && (
                        <button 
                          onClick={() => updateState({ viewTests: 'true' })}
-                         className="group relative overflow-hidden bg-indigo-600 p-8 rounded-[2rem] border border-indigo-500 hover:shadow-2xl hover:shadow-indigo-500/20 hover:-translate-y-1.5 transition-all text-left flex flex-col justify-between min-h-[180px] shadow-xl shadow-indigo-900/10"
+                         className="group relative overflow-hidden bg-indigo-600 p-8 rounded-[2rem] border border-indigo-500 hover:shadow-2xl hover:shadow-indigo-500/20 text-left flex flex-col justify-between min-h-[180px] shadow-xl shadow-indigo-900/10"
                        >
-                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-bl-full -mr-8 -mt-8 opacity-20 group-hover:opacity-30 transition-opacity" />
-                         <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white shadow-inner mb-6 transition-transform group-hover:scale-110">
+                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-bl-full -mr-8 -mt-8 opacity-20 group-hover:opacity-30" />
+                         <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white shadow-inner mb-6">
                             <MonitorPlay className="w-8 h-8" />
                          </div>
                          <div>
@@ -231,9 +231,9 @@ function StudentDashboardContent({ params }: { params: Promise<{ id: string }> }
                       <button 
                         key={subject}
                         onClick={() => updateState({ subject, viewTests: null })}
-                        className="group relative overflow-hidden bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 hover:border-blue-500/50 hover:shadow-2xl hover:-translate-y-1.5 transition-all text-left flex flex-col justify-between min-h-[180px] shadow-lg shadow-zinc-200/50 dark:shadow-none"
+                        className="group relative overflow-hidden bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 hover:border-blue-500/50 hover:shadow-2xl text-left flex flex-col justify-between min-h-[180px] shadow-lg shadow-zinc-200/50 dark:shadow-none"
                       >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/5 to-transparent rounded-bl-full -mr-8 -mt-8 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/5 to-transparent rounded-bl-full -mr-8 -mt-8 opacity-0 group-hover:opacity-100" />
                         <ModernSubjectIcon name={subject} size="w-14 h-14" />
                         <div>
                            <h4 className="text-xl font-black text-zinc-900 dark:text-white tracking-tight uppercase line-clamp-1">{subject}</h4>
@@ -260,10 +260,10 @@ function StudentDashboardContent({ params }: { params: Promise<{ id: string }> }
                         <div key={testName} className="flex flex-col w-full overflow-hidden">
                           <button 
                             onClick={() => updateState({ test: isExpanded ? null : testName })}
-                            className={`flex items-center justify-between bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border transition-all text-left group shadow-lg ${isExpanded ? 'border-indigo-500 shadow-indigo-500/10 ring-1 ring-indigo-500/10' : 'border-zinc-200 dark:border-zinc-800 hover:border-indigo-500/50'}`}
+                            className={`flex items-center justify-between bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border text-left group shadow-lg ${isExpanded ? 'border-indigo-500 shadow-indigo-500/10 ring-1 ring-indigo-500/10' : 'border-zinc-200 dark:border-zinc-800 hover:border-indigo-500/50'}`}
                           >
                              <div className="flex items-center gap-5">
-                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-lg transition-all ${isExpanded ? 'scale-110 rotate-3' : 'group-hover:scale-105'} ${testName.includes('Major') ? 'bg-blue-600 text-white shadow-blue-500/20' : 'bg-indigo-600 text-white shadow-indigo-500/20'}`}>
+                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-lg ${testName.includes('Major') ? 'bg-blue-600 text-white shadow-blue-500/20' : 'bg-indigo-600 text-white shadow-indigo-500/20'}`}>
                                    <MonitorPlay className="w-8 h-8" />
                                 </div>
                                 <div className="space-y-1">
@@ -271,7 +271,7 @@ function StudentDashboardContent({ params }: { params: Promise<{ id: string }> }
                                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mt-2">{testTree[testName]?.length || 0} Files Available</p>
                                 </div>
                              </div>
-                             <div className={`w-10 h-10 rounded-full flex items-center justify-center border border-zinc-100 dark:border-zinc-800 transition-all ${isExpanded ? 'rotate-90 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 border-indigo-200' : 'text-zinc-400'}`}>
+                             <div className={`w-10 h-10 rounded-full flex items-center justify-center border border-zinc-100 dark:border-zinc-800 ${isExpanded ? 'rotate-90 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 border-indigo-200' : 'text-zinc-400'}`}>
                                 <ChevronRight className="w-6 h-6" />
                              </div>
                           </button>
@@ -322,9 +322,9 @@ function StudentDashboardContent({ params }: { params: Promise<{ id: string }> }
                   <button 
                     key={chapter}
                     onClick={() => updateState({ chapter })}
-                    className="flex items-center gap-5 bg-white dark:bg-zinc-900 p-7 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 hover:border-indigo-500/50 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:shadow-2xl transition-all text-left group"
+                    className="flex items-center gap-5 bg-white dark:bg-zinc-900 p-7 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 hover:border-indigo-500/50 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:shadow-2xl text-left group"
                   >
-                    <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800 rounded-2xl flex items-center justify-center shadow-sm shrink-0 border border-zinc-100 dark:border-zinc-800 group-hover:border-indigo-500/20 transition-colors">
+                    <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800 rounded-2xl flex items-center justify-center shadow-sm shrink-0 border border-zinc-100 dark:border-zinc-800 group-hover:border-indigo-500/20">
                       <Folder className="w-8 h-8 text-indigo-500" />
                     </div>
                     <div>
@@ -358,7 +358,7 @@ function StudentDashboardContent({ params }: { params: Promise<{ id: string }> }
                   <Link 
                     key={rawName || idx}
                     href={`/viewer?url=${encodeURIComponent(`/storage/students/${resolvedFolderName}/subjects/${encodeURIComponent(selectedSubject as string)}/${encodeURIComponent(selectedChapter as string)}/${encodeURIComponent(rawName)}`)}`}
-                    className="flex items-center justify-between bg-white dark:bg-zinc-900 p-7 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-amber-500/50 hover:shadow-2xl transition-all text-left group"
+                    className="flex items-center justify-between bg-white dark:bg-zinc-900 p-7 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-amber-500/50 hover:shadow-2xl text-left group"
                   >
                     <div className="flex items-center gap-5 w-full overflow-hidden">
                        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center shrink-0">

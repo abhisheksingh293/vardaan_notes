@@ -19,8 +19,8 @@ interface Student {
 
 export default function StudentCard({ student }: { student: Student }) {
   return (
-    <div className="group relative bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800 hover:shadow-xl hover:border-blue-500/50 transition-all duration-300 overflow-hidden transform hover:-translate-y-1">
-      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-500/10 to-transparent rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-125" />
+    <div className="group relative bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-500/10 to-transparent rounded-bl-full -mr-4 -mt-4 opacity-10" />
       
       <div className="relative flex items-center justify-between mb-4">
         {student.profile_image_url ? (
@@ -62,7 +62,7 @@ export default function StudentCard({ student }: { student: Student }) {
       <div className="mt-6">
         <Link 
           href={`/student/${student.full_name ? student.full_name.trim().replace(/[^a-zA-Z0-9]/g, '') + '_' : ''}${student.student_code || ''}`}
-          className="block w-full text-center py-2.5 px-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium rounded-xl hover:opacity-90 transition-opacity"
+          className="block w-full text-center py-2.5 px-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium rounded-xl hover:bg-opacity-90"
         >
           View Dashboard
         </Link>

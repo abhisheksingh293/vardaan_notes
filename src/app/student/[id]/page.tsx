@@ -91,7 +91,6 @@ function StudentDashboardContent({ params }: { params: Promise<{ id: string }> }
   const testTree = treeData?.testTree || null;
   const resolvedFolderName = treeData?.folderName || studentCode;
 
-  // Sync Drill-down state with URL Search Parameters
   const selectedSubject = searchParams.get('subject');
   const selectedChapter = searchParams.get('chapter');
   const isViewingTests = searchParams.get('viewTests') === 'true';
@@ -106,277 +105,209 @@ function StudentDashboardContent({ params }: { params: Promise<{ id: string }> }
      router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  // Initial Hydration Toggle
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Hydration Match: Ensure the client's first pass matches the server's fallback (the spinner).
-  // Once mounted, it uses SWR's cache (student/tree) to instantly provide the dashboard view.
   const isHardLoading = !mounted || (!student && studentLoading) || (!tree && treeLoading);
 
   if (isHardLoading) {
-    return <div className="min-h-screen flex items-center justify-center dark:bg-zinc-950 shadow-inner"><div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>;
+    return <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]"><div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>;
   }
 
   if (studentError || !student) {
-    return <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen dark:bg-zinc-950 dark:text-white">
-        <p className="text-xl font-medium mb-4">Student "{studentCode}" not found.</p>
-        <Link href="/" className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">Return Home</Link>
+    return <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen bg-[#F8F9FA]">
+        <p className="text-xl font-medium mb-4">Content not available.</p>
+        <button onClick={() => window.location.reload()} className="px-6 py-2 bg-blue-600 text-white rounded-lg">Retry</button>
     </div>;
   }
 
-  // Helper arrays
   const subjects = tree ? Object.keys(tree) : [];
   const chapters = selectedSubject && tree && tree[selectedSubject] ? Object.keys(tree[selectedSubject]) : [];
   const files = selectedChapter && selectedSubject && tree && tree[selectedSubject] && tree[selectedSubject][selectedChapter] ? tree[selectedSubject][selectedChapter] : [];
 
+  const handleBack = () => {
+    if (selectedTest) updateState({ test: null });
+    else if (isViewingTests) updateState({ viewTests: null });
+    else if (selectedChapter) updateState({ chapter: null });
+    else if (selectedSubject) updateState({ subject: null });
+  };
+
+  const isDrillDown = selectedSubject || isViewingTests;
+
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 p-4 sm:p-6 flex flex-col pt-6">
-      <div className="max-w-6xl mx-auto w-full flex-1 flex flex-col fade-in">
+    <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+      <div className="w-full max-w-2xl mx-auto px-4 py-2 flex-1 flex flex-col">
         
-        {/* Drill-down Breadcrumbs */}
-        <div className="flex items-center gap-2 mb-6 text-sm font-medium text-zinc-600 dark:text-zinc-400 overflow-x-auto pb-2 scrollbar-width-none snap-x relative z-0">
-           <button 
-             onClick={() => { updateState({ subject: null, chapter: null, viewTests: null, test: null }); }}
-             className={`hover:text-blue-600 dark:hover:text-blue-400 py-1 shrink-0 snap-start ${(!selectedSubject && !isViewingTests) ? 'text-blue-600 dark:text-blue-400' : ''}`}
-           >
-             Dashboard
-           </button>
-           
-           {isViewingTests && (
-             <>
-               <ChevronRight className="w-4 h-4 text-zinc-300 dark:text-zinc-700 shrink-0" />
-               <button 
-                 onClick={() => { updateState({ test: null }); }}
-                 className={`hover:text-blue-600 dark:hover:text-blue-400 shrink-0 ${isViewingTests && !selectedTest ? 'text-blue-600 dark:text-blue-400' : ''}`}
-               >
-                 Tests
-               </button>
-             </>
-           )}
-
-           {selectedTest && (
-             <>
-               <ChevronRight className="w-4 h-4 text-zinc-300 dark:text-zinc-700 shrink-0" />
-               <span className="text-blue-600 dark:text-blue-400 shrink-0">{selectedTest}</span>
-             </>
-           )}
-
-           {selectedSubject && (
-             <>
-               <ChevronRight className="w-4 h-4 text-zinc-300 dark:text-zinc-700 shrink-0" />
-               <button 
-                 onClick={() => { updateState({ chapter: null }); }}
-                 className={`hover:text-blue-600 dark:hover:text-blue-400 shrink-0 capitalize ${selectedSubject && !selectedChapter ? 'text-blue-600 dark:text-blue-400' : ''}`}
-               >
-                 {selectedSubject}
-               </button>
-             </>
-           )}
-
-           {selectedChapter && (
-             <>
-               <ChevronRight className="w-4 h-4 text-zinc-300 dark:text-zinc-700 shrink-0" />
-               <span
-                 className="text-blue-600 dark:text-blue-400 shrink-0"
-               >
-                 {selectedChapter}
+        {/* Navigation Context / Back Button */}
+        {isDrillDown && (
+          <div className="flex items-center gap-3 py-4 sticky top-0 bg-[#F8F9FA]/80 backdrop-blur-sm z-10 mx-[-1rem] px-4">
+            <button 
+              onClick={handleBack}
+              className="w-10 h-10 rounded-full bg-white shadow-sm border border-zinc-200 flex items-center justify-center text-zinc-900 active:bg-zinc-50"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div className="flex flex-col min-w-0">
+               <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest leading-none mb-1">
+                 {isViewingTests ? 'Assessments' : selectedSubject}
                </span>
-             </>
-           )}
-        </div>
+               <h2 className="text-lg font-black text-zinc-900 truncate leading-none capitalize">
+                 {selectedTest || selectedChapter || 'Select Module'}
+               </h2>
+            </div>
+          </div>
+        )}
 
-        {/* Dynamic Display Area */}
-        <div className="flex-1 flex flex-col relative w-full pb-20">
+        <div className="flex-1 space-y-6 pb-12">
           
-          {/* Root Level: Dual-Zone Cockpit (Tests & Subjects) */}
-          {!selectedSubject && !isViewingTests && (
-            <div className="w-full space-y-12">
-               
-               {/* Zone 1: Tests */}
-               <section>
-                  <div className="flex items-center gap-3 mb-6">
-                     <div className="w-1.5 h-6 bg-indigo-600 rounded-full"></div>
-                     <h3 className="text-2xl font-black dark:text-white tracking-tight uppercase">Tests</h3>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {testTree && Object.keys(testTree).length > 0 && (
-                       <button 
-                         onClick={() => updateState({ viewTests: 'true' })}
-                         className="group relative overflow-hidden bg-indigo-600 p-8 rounded-[2rem] border border-indigo-500 hover:shadow-2xl hover:shadow-indigo-500/20 text-left flex flex-col justify-between min-h-[180px] shadow-xl shadow-indigo-900/10"
-                       >
-                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-bl-full -mr-8 -mt-8 opacity-20 group-hover:opacity-30" />
-                         <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white shadow-inner mb-6">
-                            <MonitorPlay className="w-8 h-8" />
-                         </div>
-                         <div>
-                            <h4 className="text-2xl font-black text-white tracking-tight uppercase">Tests</h4>
-                         </div>
-                       </button>
-                    )}
-                  </div>
-               </section>
+          {/* Main Dashboard (Entry view) */}
+          {!isDrillDown && (
+            <div className="space-y-8 pt-4">
+               {/* Test Section */}
+               {testTree && Object.keys(testTree).length > 0 && (
+                 <section className="space-y-4">
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 px-2">Assessments</h3>
+                    <button 
+                      onClick={() => updateState({ viewTests: 'true' })}
+                      className="w-full flex items-center justify-between bg-white p-6 rounded-[2rem] border border-zinc-200 shadow-sm active:bg-zinc-50 text-left relative overflow-hidden"
+                    >
+                      <div className="flex items-center gap-5 relative z-10">
+                        <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                           <MonitorPlay className="w-7 h-7" />
+                        </div>
+                        <div>
+                           <h4 className="text-xl font-bold text-zinc-900 tracking-tight">Practice Tests</h4>
+                           <p className="text-xs font-medium text-zinc-500">{Object.keys(testTree).length} active papers</p>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-6 h-6 text-zinc-300" />
+                    </button>
+                 </section>
+               )}
 
-               {/* Zone 2: Subjects */}
-               <section>
-                  <div className="flex items-center gap-3 mb-6">
-                     <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
-                     <h3 className="text-2xl font-black dark:text-white tracking-tight uppercase">Subjects</h3>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {subjects.length > 0 ? subjects.map(subject => (
+               {/* Subject Section */}
+               <section className="space-y-4">
+                  <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 px-2">Academic Subjects</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {subjects.map(subject => (
                       <button 
                         key={subject}
                         onClick={() => updateState({ subject, viewTests: null })}
-                        className="group relative overflow-hidden bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 hover:border-blue-500/50 hover:shadow-2xl text-left flex flex-col justify-between min-h-[180px] shadow-lg shadow-zinc-200/50 dark:shadow-none"
+                        className="flex flex-col bg-white p-5 rounded-[2.2rem] border border-zinc-200 shadow-sm active:bg-zinc-50 text-left min-h-[160px] justify-between relative overflow-hidden"
                       >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/5 to-transparent rounded-bl-full -mr-8 -mt-8 opacity-0 group-hover:opacity-100" />
-                        <ModernSubjectIcon name={subject} size="w-14 h-14" />
+                        <ModernSubjectIcon name={subject} size="w-12 h-12" />
                         <div>
-                           <h4 className="text-xl font-black text-zinc-900 dark:text-white tracking-tight uppercase line-clamp-1">{subject}</h4>
+                           <h4 className="text-base font-bold text-zinc-900 tracking-tight leading-tight uppercase line-clamp-2">{subject}</h4>
+                           <p className="text-[10px] font-bold text-blue-600 mt-1 uppercase tracking-widest">{Object.keys(tree[subject] || {}).length} Modules</p>
                         </div>
                       </button>
-                    )) : (
-                      <div className="col-span-full py-16 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[2rem]">
-                         <p className="text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-widest text-xs italic">No Subjects Found</p>
-                      </div>
-                    )}
+                    ))}
                   </div>
                </section>
             </div>
           )}
 
-          {/* Level -1: Global Assessment View (Accordion List) */}
-          {isViewingTests && (
-             <div className="w-full animate-in fade-in slide-in-from-bottom-2 duration-700">
-                <h3 className="text-2xl font-black dark:text-white mb-8 uppercase tracking-tight">Active Tests</h3>
-                <div className="flex flex-col gap-4">
-                   {Object.keys(testTree || {}).map(testName => {
-                      const isExpanded = selectedTest === testName;
-                      return (
-                        <div key={testName} className="flex flex-col w-full overflow-hidden">
-                          <button 
-                            onClick={() => updateState({ test: isExpanded ? null : testName })}
-                            className={`flex items-center justify-between bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border text-left group shadow-lg ${isExpanded ? 'border-indigo-500 shadow-indigo-500/10 ring-1 ring-indigo-500/10' : 'border-zinc-200 dark:border-zinc-800 hover:border-indigo-500/50'}`}
-                          >
-                             <div className="flex items-center gap-5">
-                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-lg ${testName.includes('Major') ? 'bg-blue-600 text-white shadow-blue-500/20' : 'bg-indigo-600 text-white shadow-indigo-500/20'}`}>
-                                   <MonitorPlay className="w-8 h-8" />
-                                </div>
-                                <div className="space-y-1">
-                                   <h4 className="text-lg font-black text-zinc-900 dark:text-white tracking-tight uppercase leading-none">{testName}</h4>
-                                   <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mt-2">{testTree[testName]?.length || 0} Files Available</p>
-                                </div>
-                             </div>
-                             <div className={`w-10 h-10 rounded-full flex items-center justify-center border border-zinc-100 dark:border-zinc-800 ${isExpanded ? 'rotate-90 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 border-indigo-200' : 'text-zinc-400'}`}>
-                                <ChevronRight className="w-6 h-6" />
-                             </div>
-                          </button>
-
-                          {/* Accordion Content (Dropdown Files Grid) */}
-                          {isExpanded && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 ml-4 sm:ml-12 animate-in slide-in-from-top-4 fade-in duration-500">
-                               {(testTree[testName] || []).map((file: string, idx: number) => {
-                                  const isSolution = file.toLowerCase().includes('solution');
-                                  const label = isSolution ? "SOLUTION / KEY" : "QUESTION PAPER";
-                                  
-                                  return (
-                                     <Link 
-                                        key={file || idx}
-                                        href={`/viewer?url=${encodeURIComponent(`/storage/students/${resolvedFolderName}/Test/${encodeURIComponent(testName)}/${encodeURIComponent(file)}`)}`}
-                                        className="flex items-center justify-between bg-white dark:bg-zinc-900 p-6 rounded-[1.8rem] border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/50 hover:shadow-xl hover:-translate-y-1 transition-all group/file relative overflow-hidden"
-                                     >
-                                        <div className="absolute inset-0 bg-gradient-to-br from-white to-zinc-50 dark:from-zinc-900 dark:to-zinc-950 opacity-0 group-hover/file:opacity-100 transition-opacity" />
-                                        
-                                        <div className="flex items-center gap-4 relative z-10 w-full">
-                                           <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-inner ${isSolution ? 'bg-emerald-500/10 text-emerald-500' : 'bg-blue-500/10 text-blue-500'}`}>
-                                              {isSolution ? <CheckCircle className="w-6 h-6" /> : <FileText className="w-6 h-6" />}
-                                           </div>
-                                           <div className="flex flex-col min-w-0">
-                                              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 leading-none mb-1">{label}</span>
-                                              <span className="text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight line-clamp-1">{file.replace('.html', '').replace(/([a-z])([A-Z])/g, '$1 $2')}</span>
-                                           </div>
-                                        </div>
-                                        <ChevronRight className="w-5 h-5 text-zinc-300 dark:text-zinc-600 group-hover/file:text-emerald-500 transition-colors shrink-0 relative z-10" />
-                                     </Link>
-                                  );
-                               })}
-                            </div>
-                          )}
+          {/* Test List View */}
+          {isViewingTests && !selectedTest && (
+             <div className="flex flex-col gap-3 pt-2">
+                {Object.keys(testTree || {}).map(testName => (
+                  <button 
+                    key={testName}
+                    onClick={() => updateState({ test: testName })}
+                    className="flex items-center justify-between bg-white p-6 rounded-[2rem] border border-zinc-200 shadow-sm active:bg-zinc-50 group"
+                  >
+                     <div className="flex items-center gap-5">
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-md ${testName.includes('Major') ? 'bg-blue-600' : 'bg-indigo-600'}`}>
+                           <MonitorPlay className="w-7 h-7" />
                         </div>
-                      );
-                   })}
-                </div>
+                        <div>
+                           <h4 className="text-base font-bold text-zinc-900 tracking-tight uppercase line-clamp-1">{testName}</h4>
+                           <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{testTree[testName]?.length || 0} Materials</p>
+                        </div>
+                     </div>
+                     <ChevronRight className="w-5 h-5 text-zinc-300" />
+                  </button>
+                ))}
              </div>
           )}
 
-          {/* Level 1: Curriculum Chapters */}
+          {/* Test Files View */}
+          {selectedTest && (
+             <div className="grid grid-cols-1 gap-3 pt-2">
+                {(testTree[selectedTest] || []).map((file: string, idx: number) => {
+                   const isSolution = file.toLowerCase().includes('solution');
+                   return (
+                      <Link 
+                         key={file || idx}
+                         href={`/viewer?url=${encodeURIComponent(`/storage/students/${resolvedFolderName}/Test/${encodeURIComponent(selectedTest)}/${encodeURIComponent(file)}`)}`}
+                         className="flex items-center justify-between bg-white p-5 rounded-[1.8rem] border border-zinc-200 shadow-sm active:bg-zinc-50"
+                      >
+                         <div className="flex items-center gap-4 w-full">
+                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-inner ${isSolution ? 'bg-emerald-500/10 text-emerald-500' : 'bg-blue-500/10 text-blue-500'}`}>
+                               {isSolution ? <CheckCircle className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                               <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-0.5">{isSolution ? 'SOLUTION' : 'QUESTION'}</span>
+                               <span className="text-sm font-bold text-zinc-900 uppercase tracking-tight truncate line-clamp-1">{file.replace('.html', '').replace(/([a-z])([A-Z])/g, '$1 $2')}</span>
+                            </div>
+                         </div>
+                         <ChevronRight className="w-5 h-5 text-zinc-300 shrink-0" />
+                      </Link>
+                   );
+                })}
+             </div>
+          )}
+
+          {/* Chapter List View */}
           {selectedSubject && !selectedChapter && (
-            <div className="fade-in w-full animate-in duration-700">
-              <h3 className="text-2xl font-black dark:text-white mb-8 uppercase tracking-tight">{selectedSubject} Modules</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {chapters.length > 0 ? chapters.map(chapter => (
-                  <button 
-                    key={chapter}
-                    onClick={() => updateState({ chapter })}
-                    className="flex items-center gap-5 bg-white dark:bg-zinc-900 p-7 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 hover:border-indigo-500/50 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:shadow-2xl text-left group"
-                  >
-                    <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800 rounded-2xl flex items-center justify-center shadow-sm shrink-0 border border-zinc-100 dark:border-zinc-800 group-hover:border-indigo-500/20">
-                      <Folder className="w-8 h-8 text-indigo-500" />
-                    </div>
-                    <div>
-                       <h4 className="text-lg font-black text-zinc-900 dark:text-white line-clamp-1 tracking-tight uppercase">{chapter}</h4>
-                       <p className="text-[10px] font-black text-zinc-500 mt-1 uppercase tracking-widest">{tree[selectedSubject][chapter].length} Resources</p>
-                    </div>
-                  </button>
-                )) : (
-                   <div className="col-span-full py-16 text-center text-zinc-500 uppercase font-black text-xs tracking-widest">
-                    No modules configured.
+            <div className="grid grid-cols-1 gap-3 pt-2">
+              {chapters.map(chapter => (
+                <button 
+                  key={chapter}
+                  onClick={() => updateState({ chapter })}
+                  className="flex items-center gap-4 bg-white p-6 rounded-[2rem] border border-zinc-200 shadow-sm active:bg-zinc-50 text-left group"
+                >
+                  <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0 border border-indigo-100">
+                    <Folder className="w-6 h-6 text-indigo-500" />
                   </div>
-                )}
-              </div>
+                  <div>
+                     <h4 className="text-base font-bold text-zinc-900 tracking-tight uppercase leading-tight line-clamp-1">{chapter}</h4>
+                     <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{tree[selectedSubject][chapter].length} Resources</p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-zinc-300 ml-auto" />
+                </button>
+              ))}
             </div>
           )}
 
-          {/* Level 2: Resource Files */}
+          {/* Chapters Content View */}
           {selectedChapter && (
-            <div className="fade-in w-full animate-in duration-700">
-              <h3 className="text-2xl font-black dark:text-white mb-8 uppercase tracking-tight">{selectedChapter} Materials</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {files.length > 0 ? files.map((file: any, idx: number) => {
-                  const rawName = file.name || file;
-                  const spaced = rawName.replace(/\.html$/i, '')
-                                        .replace(/([a-z])([A-Z])/g, '$1 $2')
-                                        .replace(/([a-zA-Z])(\d)/g, '$1 $2')
-                                        .replace(/[-_]/g, ' ');
-                  const formattedName = spaced.split(' ').filter(Boolean).map((w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+            <div className="grid grid-cols-1 gap-3 pt-2">
+              {files.map((file: any, idx: number) => {
+                const rawName = file.name || file;
+                const spaced = rawName.replace(/\.html$/i, '').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/([a-zA-Z])(\d)/g, '$1 $2').replace(/[-_]/g, ' ');
+                const formattedName = spaced.split(' ').filter(Boolean).map((w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
 
-                  return (
+                return (
                   <Link 
                     key={rawName || idx}
                     href={`/viewer?url=${encodeURIComponent(`/storage/students/${resolvedFolderName}/subjects/${encodeURIComponent(selectedSubject as string)}/${encodeURIComponent(selectedChapter as string)}/${encodeURIComponent(rawName)}`)}`}
-                    className="flex items-center justify-between bg-white dark:bg-zinc-900 p-7 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-amber-500/50 hover:shadow-2xl text-left group"
+                    className="flex items-center justify-between bg-white p-6 rounded-[2rem] border border-zinc-200 shadow-sm active:bg-zinc-50"
                   >
                     <div className="flex items-center gap-5 w-full overflow-hidden">
-                       <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center shrink-0">
+                       <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
                           <FileText className="w-6 h-6 text-amber-500" />
                        </div>
-                       <div>
-                          <span className="text-sm font-black text-zinc-900 dark:text-zinc-100 truncate line-clamp-1 pr-4 uppercase tracking-tight">{formattedName}</span>
-                          <p className="text-[10px] font-black text-zinc-500 tracking-widest uppercase opacity-60">Study Material</p>
+                       <div className="min-w-0">
+                          <span className="text-sm font-bold text-zinc-900 uppercase tracking-tight truncate line-clamp-1 leading-none">{formattedName}</span>
+                          <p className="text-[10px] font-black text-zinc-400 tracking-widest uppercase mt-1 leading-none">Module Content</p>
                        </div>
                     </div>
-                    <ChevronRight className="w-6 h-6 text-zinc-300 dark:text-zinc-600 group-hover:text-amber-500 transition-colors shrink-0" />
+                    <ChevronRight className="w-5 h-5 text-zinc-300 shrink-0" />
                   </Link>
-                )}) : (
-                   <div className="col-span-full py-16 text-center text-zinc-500 uppercase font-black text-xs tracking-widest">
-                    No resources uploaded.
-                  </div>
-                )}
-              </div>
+                )
+              })}
             </div>
           )}
 

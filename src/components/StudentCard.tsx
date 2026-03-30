@@ -18,55 +18,57 @@ interface Student {
 }
 
 export default function StudentCard({ student }: { student: Student }) {
+  const studentUrl = `/student/${student.full_name ? student.full_name.trim().replace(/[^a-zA-Z0-9]/g, '') + '_' : ''}${student.student_code || ''}`;
+  
   return (
-    <div className="group relative bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-500/10 to-transparent rounded-bl-full -mr-4 -mt-4 opacity-10" />
+    <div className="group relative bg-white rounded-[2.5rem] p-8 shadow-sm border border-zinc-200 hover:shadow-2xl hover:border-blue-500/30 transition-all duration-300">
       
-      <div className="relative flex items-center justify-between mb-4">
-        {student.profile_image_url ? (
-          <img src={student.profile_image_url} alt="Profile" className="h-16 w-16 rounded-full object-cover shadow-inner border border-zinc-200 dark:border-zinc-700" />
-        ) : (
-          <div className="h-16 w-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-inner uppercase">
-            {(student.full_name || '?').charAt(0)}
+      <div className="flex items-start justify-between mb-6">
+        <div className="flex items-center gap-4">
+          {student.profile_image_url ? (
+            <img src={student.profile_image_url} alt="Profile" className="h-16 w-16 rounded-3xl object-cover shadow-sm border border-zinc-100" />
+          ) : (
+            <div className="h-16 w-16 bg-blue-600 rounded-3xl flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-blue-500/20 uppercase">
+              {(student.full_name || '?').charAt(0)}
+            </div>
+          )}
+          <div className="flex flex-col">
+             <h3 className="text-xl font-black text-zinc-900 leading-tight line-clamp-1 uppercase tracking-tight">{student.full_name || 'Anonymous'}</h3>
+             <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1">
+               {student.student_code || 'UNREGISTERED'}
+             </span>
           </div>
-        )}
-        <span className="text-xs font-semibold px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-full border border-zinc-200 dark:border-zinc-700">
-          {student.student_code || 'N/A'}
-        </span>
+        </div>
       </div>
-
-      <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-1 line-clamp-1">{student.full_name || 'Unknown Student'}</h3>
       
-      <div className="space-y-2 mt-4 text-sm text-zinc-600 dark:text-zinc-400">
-        <div className="flex items-center gap-2">
-          <BookOpen className="w-4 h-4 text-blue-500 shrink-0" />
-          <span>Class {student.class || '-'} • {student.board || '-'}</span>
+      <div className="space-y-4 mb-8">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-zinc-50 flex items-center justify-center border border-zinc-100 shadow-inner group-hover:bg-blue-50 transition-colors">
+            <BookOpen className="w-5 h-5 text-zinc-500 group-hover:text-blue-500" />
+          </div>
+          <div className="flex flex-col">
+             <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none mb-1">Curriculum</span>
+             <span className="text-sm font-bold text-zinc-700 leading-none">Class {student.class || '-'} • {student.board || '-'}</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <School className="w-4 h-4 text-indigo-500 shrink-0" />
-          <span className="line-clamp-1">{student.school || 'No School Recorded'}</span>
+
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-zinc-50 flex items-center justify-center border border-zinc-100 shadow-inner group-hover:bg-indigo-50 transition-colors">
+            <School className="w-5 h-5 text-zinc-500 group-hover:text-indigo-500" />
+          </div>
+          <div className="flex flex-col">
+             <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none mb-1">Institution</span>
+             <span className="text-sm font-bold text-zinc-700 leading-none line-clamp-1">{student.school || 'Private Student'}</span>
+          </div>
         </div>
-        {(student.mobile_number || student.email) && (
-           <div className="flex items-center gap-2 text-xs pt-1">
-             <User className="w-4 h-4 text-teal-500 shrink-0" />
-             <span className="line-clamp-1">{student.mobile_number || student.email}</span>
-           </div>
-        )}
-        {(student.city || student.state) && (
-           <div className="flex items-center gap-2 text-xs">
-             <span className="ml-6 line-clamp-1 text-zinc-500">{[student.city, student.state].filter(Boolean).join(', ')}</span>
-           </div>
-        )}
       </div>
 
-      <div className="mt-6">
-        <Link 
-          href={`/student/${student.full_name ? student.full_name.trim().replace(/[^a-zA-Z0-9]/g, '') + '_' : ''}${student.student_code || ''}`}
-          className="block w-full text-center py-2.5 px-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium rounded-xl hover:bg-opacity-90"
-        >
-          View Dashboard
-        </Link>
-      </div>
+      <Link 
+        href={studentUrl}
+        className="flex items-center justify-center gap-2 w-full py-4 bg-blue-600 text-white font-black text-sm rounded-[1.5rem] shadow-lg shadow-blue-500/20 active:bg-blue-700 hover:bg-blue-700 uppercase tracking-widest transition-all"
+      >
+        View Profile
+      </Link>
     </div>
   );
 }
